@@ -1,0 +1,68 @@
+@model ClassManagement.Application.DTOs.SubmitAssignmentDto
+@{
+    ViewData["Title"] = "Nộp bài tập";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>Nộp bài tập
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Submit" method="post" enctype="multipart/form-data">
+                        <input asp-for="AssignmentId" type="hidden" />
+                        
+                        <div class="mb-3">
+                            <label for="textAnswer" class="form-label">Câu trả lời</label>
+                            <textarea asp-for="TextAnswer" class="form-control" rows="10" placeholder="Nhập câu trả lời của bạn..."></textarea>
+                            <span asp-validation-for="TextAnswer" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="fileUpload" class="form-label">File đính kèm (tùy chọn)</label>
+                            <input type="file" id="fileUpload" name="file" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" />
+                            <div class="form-text">Chấp nhận file: PDF, DOC, DOCX, TXT, JPG, PNG (tối đa 10MB)</div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Nộp bài
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // File upload validation
+        document.getElementById('fileUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert('File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.');
+                    e.target.value = '';
+                }
+            }
+        });
+    </script>
+}
+
+
+
+

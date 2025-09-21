@@ -1,0 +1,86 @@
+@model ClassManagement.Application.DTOs.CreateAssignmentDto
+@{
+    ViewData["Title"] = "Tạo bài tập mới";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Tạo bài tập mới
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateAssignment" method="post" enctype="multipart/form-data">
+                        <input asp-for="CourseId" type="hidden" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Tiêu đề bài tập</label>
+                            <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề bài tập" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Mô tả bài tập</label>
+                            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Nhập mô tả chi tiết bài tập..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="fileUpload" class="form-label">File bài tập (tùy chọn)</label>
+                            <input type="file" id="fileUpload" name="file" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" />
+                            <div class="form-text">Chấp nhận file: PDF, DOC, DOCX, TXT, JPG, PNG (tối đa 10MB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="DueDate" class="form-label">Hạn nộp bài</label>
+                            <input asp-for="DueDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="DueDate" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Tạo bài tập
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a asp-controller="Course" asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // File upload validation
+        document.getElementById('fileUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert('File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.');
+                    e.target.value = '';
+                }
+            }
+        });
+        
+        // Set default due date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(23, 59, 0, 0);
+        document.querySelector('input[type="datetime-local"]').value = tomorrow.toISOString().slice(0, 16);
+    </script>
+}
+
+
+
+

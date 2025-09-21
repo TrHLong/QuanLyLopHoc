@@ -1,0 +1,17 @@
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\bin\Debug\net8.0\ClassManagement.Infrastructure.deps.json
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\bin\Debug\net8.0\ClassManagement.Infrastructure.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\bin\Debug\net8.0\ClassManagement.Infrastructure.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.AssemblyInfoInputs.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.AssemblyInfo.cs
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.csproj.CoreCompileInputs.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\refint\ClassManagement.Infrastructure.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ref\ClassManagement.Infrastructure.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.csproj.AssemblyReference.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\bin\Debug\net8.0\ClassManagement.Infrastructure.runtimeconfig.json
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\bin\Debug\net8.0\ClassManagement.Domain.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\bin\Debug\net8.0\ClassManagement.Domain.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassMan.C2BC9350.Up2Date
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Infrastructure\obj\Debug\net8.0\ClassManagement.Infrastructure.genruntimeconfig.cache

@@ -1,0 +1,194 @@
+@model ClassManagement.Application.DTOs.StudentDto
+
+<div class="account-details-header mb-4">
+    <div class="d-flex align-items-center">
+        <div class="account-avatar me-3">
+            <i class="fas fa-user-shield fa-3x text-danger"></i>
+        </div>
+        <div>
+            <h4 class="mb-1">@Model.FullName</h4>
+            <p class="text-muted mb-0">@Model.Email</p>
+            <span class="badge bg-info">Khối @Model.Grade</span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h6><i class="fas fa-user me-2"></i>Thông tin tài khoản</h6>
+        <table class="table table-sm">
+            <tr>
+                <td><strong>Họ tên:</strong></td>
+                <td>@Model.FullName</td>
+            </tr>
+            <tr>
+                <td><strong>Email:</strong></td>
+                <td>@Model.Email</td>
+            </tr>
+            <tr>
+                <td><strong>Khối:</strong></td>
+                <td><span class="badge bg-info">Khối @Model.Grade</span></td>
+            </tr>
+            <tr>
+                <td><strong>Trạng thái tài khoản:</strong></td>
+                <td>
+                    @if (Model.IsInactive)
+                    {
+                        <span class="badge bg-danger">
+                            <i class="fas fa-lock me-1"></i>Tài khoản đã khóa
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">
+                            <i class="fas fa-unlock me-1"></i>Tài khoản hoạt động
+                        </span>
+                    }
+                    @if (Model.IsDormant && !Model.IsInactive)
+                    {
+                        <br><small class="text-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Không đăng nhập > 30 ngày
+                        </small>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h6><i class="fas fa-calendar me-2"></i>Thông tin hoạt động</h6>
+        <table class="table table-sm">
+            <tr>
+                <td><strong>Ngày đăng ký:</strong></td>
+                <td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+            </tr>
+            <tr>
+                <td><strong>Lần đăng nhập cuối:</strong></td>
+                <td>
+                    @if (Model.LastLoginAt.HasValue)
+                    {
+                        @Model.LastLoginAt.Value.ToString("dd/MM/yyyy HH:mm")
+                    }
+                    else
+                    {
+                        <span class="text-muted">Chưa đăng nhập</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Thời gian tham gia:</strong></td>
+                <td>
+                    @{
+                        var daysSinceCreated = (DateTime.UtcNow - Model.CreatedAt).Days;
+                    }
+                    @daysSinceCreated ngày
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Trạng thái hoạt động:</strong></td>
+                <td>
+                    @if (Model.IsInactive)
+                    {
+                        <span class="text-danger">
+                            <i class="fas fa-lock me-1"></i>Tài khoản bị khóa
+                        </span>
+                    }
+                    else if (Model.IsDormant)
+                    {
+                        <span class="text-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Tài khoản không hoạt động (>30 ngày)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>Tài khoản hoạt động bình thường
+                        </span>
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h6><i class="fas fa-chart-bar me-2"></i>Thống kê tài khoản</h6>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">@Model.Grade</h5>
+                    <p class="card-text">Khối học</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-success">@((DateTime.UtcNow - Model.CreatedAt).Days)</h5>
+                    <p class="card-text">Ngày tham gia</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title @(Model.IsInactive ? "text-danger" : (Model.IsDormant ? "text-warning" : "text-success"))">
+                        @(Model.IsInactive ? "Đã khóa" : (Model.IsDormant ? "Không hoạt động" : "Hoạt động"))
+                    </h5>
+                    <p class="card-text">Trạng thái tài khoản</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.IsInactive)
+{
+    <div class="mt-3">
+        <div class="alert alert-danger">
+            <i class="fas fa-lock me-2"></i>
+            <strong>Tài khoản đã bị khóa:</strong> Học viên không thể đăng nhập vào hệ thống. 
+            Để mở khóa, hãy sử dụng nút "Mở khóa" trong danh sách.
+        </div>
+    </div>
+}
+else if (Model.IsDormant)
+{
+    <div class="mt-3">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Tài khoản không hoạt động:</strong> Học viên không đăng nhập hơn 30 ngày. 
+            Có thể cân nhắc khóa tài khoản nếu cần thiết.
+        </div>
+    </div>
+}
+else
+{
+    <div class="mt-3">
+        <div class="alert alert-success">
+            <i class="fas fa-unlock me-2"></i>
+            <strong>Tài khoản hoạt động:</strong> Học viên có thể đăng nhập và sử dụng hệ thống bình thường.
+        </div>
+    </div>
+}
+
+@if (Model.LastLoginAt.HasValue)
+{
+    <div class="mt-3">
+        <small class="text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Học viên đã đăng nhập lần cuối vào @Model.LastLoginAt.Value.ToString("dd/MM/yyyy 'lúc' HH:mm")
+        </small>
+    </div>
+}
+else
+{
+    <div class="mt-3">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Học viên chưa đăng nhập lần nào kể từ khi đăng ký tài khoản
+        </div>
+    </div>
+}
+
+

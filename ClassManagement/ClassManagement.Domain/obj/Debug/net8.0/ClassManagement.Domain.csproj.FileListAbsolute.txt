@@ -1,0 +1,11 @@
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\bin\Debug\net8.0\ClassManagement.Domain.deps.json
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\bin\Debug\net8.0\ClassManagement.Domain.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\bin\Debug\net8.0\ClassManagement.Domain.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ClassManagement.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ClassManagement.Domain.AssemblyInfoInputs.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ClassManagement.Domain.AssemblyInfo.cs
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ClassManagement.Domain.csproj.CoreCompileInputs.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ClassManagement.Domain.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\refint\ClassManagement.Domain.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ClassManagement.Domain.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Domain\obj\Debug\net8.0\ref\ClassManagement.Domain.dll

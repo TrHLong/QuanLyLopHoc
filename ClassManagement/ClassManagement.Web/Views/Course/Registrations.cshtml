@@ -1,0 +1,166 @@
+@model List<ClassManagement.Application.DTOs.CourseRegistrationDto>
+@{
+    ViewData["Title"] = "Duyệt đăng ký khóa học";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-check me-2"></i>Duyệt đăng ký khóa học
+                    </h5>
+                    <span class="badge bg-primary">@Model.Count đăng ký chờ duyệt</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Khối</th>
+                                        <th>Ca học</th>
+                                        <th>Ngày đăng ký</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var registration in Model)
+                                    {
+                                        <tr>
+                                            <td>@registration.StudentName</td>
+                                            <td>@registration.StudentEmail</td>
+                                            <td>
+                                                <span class="badge bg-info">Khối @registration.Grade</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">Ca @registration.TimeSlot</span>
+                                            </td>
+                                            <td>@registration.RequestedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-success btn-sm" 
+                                                            onclick="approveRegistration(@registration.Id, true)">
+                                                        <i class="fas fa-check me-1"></i>Duyệt
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-sm" 
+                                                            onclick="approveRegistration(@registration.Id, false)">
+                                                        <i class="fas fa-times me-1"></i>Từ chối
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-user-check fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Không có đăng ký nào chờ duyệt</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approval Confirmation Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approvalModalTitle">Xác nhận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="approvalModalMessage"></p>
+                <div id="rejectionReasonDiv" style="display: none;">
+                    <label for="rejectionReason" class="form-label">Lý do từ chối:</label>
+                    <textarea id="rejectionReason" class="form-control" rows="3" placeholder="Nhập lý do từ chối..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn" id="confirmApprovalBtn" onclick="confirmApproval()">
+                    <i class="fas fa-check me-1"></i>Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentRegistrationId = 0;
+        let currentApproved = true;
+
+        function approveRegistration(registrationId, approved) {
+            currentRegistrationId = registrationId;
+            currentApproved = approved;
+            
+            const modal = document.getElementById('approvalModal');
+            const title = document.getElementById('approvalModalTitle');
+            const message = document.getElementById('approvalModalMessage');
+            const reasonDiv = document.getElementById('rejectionReasonDiv');
+            const confirmBtn = document.getElementById('confirmApprovalBtn');
+            
+            if (approved) {
+                title.textContent = 'Duyệt đăng ký';
+                message.textContent = 'Bạn có chắc muốn duyệt đăng ký này?';
+                reasonDiv.style.display = 'none';
+                confirmBtn.className = 'btn btn-success';
+                confirmBtn.innerHTML = '<i class="fas fa-check me-1"></i>Duyệt';
+            } else {
+                title.textContent = 'Từ chối đăng ký';
+                message.textContent = 'Bạn có chắc muốn từ chối đăng ký này?';
+                reasonDiv.style.display = 'block';
+                confirmBtn.className = 'btn btn-danger';
+                confirmBtn.innerHTML = '<i class="fas fa-times me-1"></i>Từ chối';
+            }
+            
+            new bootstrap.Modal(modal).show();
+        }
+
+        function confirmApproval() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("ApproveRegistration")';
+            
+            const registrationIdInput = document.createElement('input');
+            registrationIdInput.type = 'hidden';
+            registrationIdInput.name = 'registrationId';
+            registrationIdInput.value = currentRegistrationId;
+            
+            const approvedInput = document.createElement('input');
+            approvedInput.type = 'hidden';
+            approvedInput.name = 'approved';
+            approvedInput.value = currentApproved;
+            
+            form.appendChild(registrationIdInput);
+            form.appendChild(approvedInput);
+            
+            if (!currentApproved) {
+                const reasonInput = document.createElement('input');
+                reasonInput.type = 'hidden';
+                reasonInput.name = 'rejectionReason';
+                reasonInput.value = document.getElementById('rejectionReason').value;
+                form.appendChild(reasonInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+}
+
+
+
+

@@ -1,0 +1,338 @@
+@model ClassManagement.Web.Controllers.StudentAssignmentsViewModel
+@{
+    ViewData["Title"] = "Bài tập";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-tasks me-2"></i>Bài tập
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Danh sách bài tập
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model?.Assignments != null && Model.Assignments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tiêu đề</th>
+                                        <th>Mô tả</th>
+                                        <th>Hạn nộp</th>
+                                        <th>Trạng thái</th>
+                                        <th>Điểm</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var assignment in Model.Assignments)
+                                    {
+                                        var submission = Model.Submissions?.FirstOrDefault(s => s.AssignmentId == assignment.Id);
+                                        <tr>
+                                            <td>
+                                                <strong>@assignment.Title</strong>
+                                                @if (assignment.IsOverdue)
+                                                {
+                                                    <span class="badge bg-danger ms-2">Quá hạn</span>
+                                                }
+                                                else if (assignment.IsDueSoon)
+                                                {
+                                                    <span class="badge bg-warning ms-2">Sắp đến hạn</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(assignment.Description))
+                                                {
+                                                    <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@assignment.Description">
+                                                        @assignment.Description
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Không có mô tả</span>
+                                                }
+                                            </td>
+                                            <td>@assignment.DueDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                @if (submission != null)
+                                                {
+                                                    <span class="badge bg-success">Đã nộp</span>
+                                                    @if (submission.IsLate)
+                                                    {
+                                                        <span class="badge bg-warning ms-1">Nộp muộn</span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Chưa nộp</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (submission?.IsGraded == true)
+                                                {
+                                                    <span class="badge bg-info">@submission.Grade</span>
+                                                }
+                                                else if (submission != null)
+                                                {
+                                                    <span class="text-muted">Chưa chấm</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            onclick="showAssignmentDetails(@assignment.Id, '@assignment.Title', '@Html.Raw(assignment.Description?.Replace("'", "\\'"))', '@assignment.DueDate.ToString("dd/MM/yyyy HH:mm")', '@(assignment.FileUrl ?? "")')">
+                                                        <i class="fas fa-eye"></i> Xem
+                                                    </button>
+                                                    @if (submission == null && !assignment.IsOverdue)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-success" 
+                                                                onclick="showSubmitForm(@assignment.Id, '@assignment.Title')">
+                                                            <i class="fas fa-upload"></i> Nộp bài
+                                                        </button>
+                                                    }
+                                                    else if (submission != null)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-info" 
+                                                                onclick="showSubmissionDetails(@assignment.Id, '@assignment.Title', '@submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")', '@submission.TextAnswer?.Replace("'", "\\'")', '@submission.FileUrl', @(submission.IsGraded ? "true" : "false"), @(submission.Grade?.ToString() ?? "null"), '@submission.Feedback?.Replace("'", "\\'")')">
+                                                            <i class="fas fa-file-alt"></i> Xem bài nộp
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có bài tập nào</h5>
+                            <p class="text-muted">Giáo viên sẽ giao bài tập và bạn sẽ thấy chúng ở đây.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại bảng điều khiển
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem chi tiết bài tập -->
+<div class="modal fade" id="assignmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignmentModalTitle">Chi tiết bài tập</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Mô tả:</strong>
+                    <p id="assignmentModalDescription">Không có mô tả</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Hạn nộp:</strong>
+                    <p id="assignmentModalDueDate"></p>
+                </div>
+                <div class="mb-3" id="assignmentModalFileSection" style="display: none;">
+                    <strong>Tài liệu đính kèm:</strong>
+                    <div class="mt-2">
+                        <a href="#" id="assignmentModalFileUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download me-1"></i>Tải xuống
+                        </a>
+                        <small class="text-muted ms-2" id="assignmentModalFileName"></small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal nộp bài -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="SubmitAssignment" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="submitModalTitle">Nộp bài</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="AssignmentId" id="submitAssignmentId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Câu trả lời (nếu có)</label>
+                        <textarea name="TextAnswer" class="form-control" rows="5" 
+                                  placeholder="Nhập câu trả lời của bạn..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">File đính kèm (URL)</label>
+                        <input type="url" name="FileUrl" class="form-control" 
+                               placeholder="https://example.com/your-file.pdf" />
+                        <small class="form-text text-muted">
+                            Bạn có thể upload file lên Google Drive, OneDrive hoặc các dịch vụ lưu trữ khác và dán link vào đây.
+                        </small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Lưu ý:</strong> Bạn chỉ có thể nộp bài một lần. Hãy kiểm tra kỹ trước khi nộp.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-upload me-1"></i>Nộp bài
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem bài đã nộp -->
+<div class="modal fade" id="submissionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="submissionModalTitle">Bài đã nộp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Thời gian nộp:</strong>
+                    <p id="submissionModalSubmittedAt"></p>
+                </div>
+                
+                <div class="mb-3" id="submissionModalTextSection" style="display: none;">
+                    <strong>Câu trả lời:</strong>
+                    <div class="border p-3 rounded bg-light" id="submissionModalTextAnswer">
+                    </div>
+                </div>
+                
+                <div class="mb-3" id="submissionModalFileSection" style="display: none;">
+                    <strong>File đính kèm:</strong>
+                    <p><a href="#" id="submissionModalFileUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>Tải xuống
+                    </a></p>
+                </div>
+                
+                <div class="mb-3" id="submissionModalGradeSection" style="display: none;">
+                    <strong>Điểm:</strong>
+                    <span class="badge bg-info fs-6" id="submissionModalGrade"></span>
+                </div>
+                
+                <div class="mb-3" id="submissionModalFeedbackSection" style="display: none;">
+                    <strong>Nhận xét:</strong>
+                    <div class="border p-3 rounded bg-light" id="submissionModalFeedback">
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning" id="submissionModalNotGraded" style="display: none;">
+                    <i class="fas fa-clock me-2"></i>Bài tập chưa được chấm điểm.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showAssignmentDetails(id, title, description, dueDate, fileUrl) {
+    document.getElementById('assignmentModalTitle').textContent = title;
+    document.getElementById('assignmentModalDescription').textContent = description || 'Không có mô tả';
+    document.getElementById('assignmentModalDueDate').textContent = dueDate;
+    
+    // Kiểm tra và hiển thị file đính kèm
+    if (fileUrl && fileUrl !== '' && fileUrl !== 'null') {
+        document.getElementById('assignmentModalFileSection').style.display = 'block';
+        document.getElementById('assignmentModalFileUrl').href = fileUrl;
+        
+        // Lấy tên file từ URL để hiển thị
+        var fileName = fileUrl.split('/').pop();
+        document.getElementById('assignmentModalFileName').textContent = fileName;
+        document.getElementById('assignmentModalFileUrl').title = 'Tải xuống: ' + fileName;
+    } else {
+        document.getElementById('assignmentModalFileSection').style.display = 'none';
+    }
+    
+    new bootstrap.Modal(document.getElementById('assignmentModal')).show();
+}
+
+function showSubmitForm(id, title) {
+    document.getElementById('submitModalTitle').textContent = 'Nộp bài: ' + title;
+    document.getElementById('submitAssignmentId').value = id;
+    new bootstrap.Modal(document.getElementById('submitModal')).show();
+}
+
+function showSubmissionDetails(id, title, submittedAt, textAnswer, fileUrl, isGraded, grade, feedback) {
+    document.getElementById('submissionModalTitle').textContent = 'Bài đã nộp: ' + title;
+    document.getElementById('submissionModalSubmittedAt').textContent = submittedAt;
+    
+    if (textAnswer && textAnswer !== '') {
+        document.getElementById('submissionModalTextSection').style.display = 'block';
+        document.getElementById('submissionModalTextAnswer').textContent = textAnswer;
+    } else {
+        document.getElementById('submissionModalTextSection').style.display = 'none';
+    }
+    
+    if (fileUrl && fileUrl !== '') {
+        document.getElementById('submissionModalFileSection').style.display = 'block';
+        document.getElementById('submissionModalFileUrl').href = fileUrl;
+    } else {
+        document.getElementById('submissionModalFileSection').style.display = 'none';
+    }
+    
+    if (isGraded) {
+        document.getElementById('submissionModalGradeSection').style.display = 'block';
+        document.getElementById('submissionModalGrade').textContent = grade;
+        document.getElementById('submissionModalNotGraded').style.display = 'none';
+        
+        if (feedback && feedback !== '') {
+            document.getElementById('submissionModalFeedbackSection').style.display = 'block';
+            document.getElementById('submissionModalFeedback').textContent = feedback;
+        } else {
+            document.getElementById('submissionModalFeedbackSection').style.display = 'none';
+        }
+    } else {
+        document.getElementById('submissionModalGradeSection').style.display = 'none';
+        document.getElementById('submissionModalFeedbackSection').style.display = 'none';
+        document.getElementById('submissionModalNotGraded').style.display = 'block';
+    }
+    
+    new bootstrap.Modal(document.getElementById('submissionModal')).show();
+}
+</script>

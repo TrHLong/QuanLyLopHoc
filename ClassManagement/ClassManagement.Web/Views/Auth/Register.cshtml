@@ -1,0 +1,92 @@
+@model ClassManagement.Application.DTOs.RegisterStudentDto
+@{
+    ViewData["Title"] = "Đăng ký học viên";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Đăng ký học viên
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Register" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FullName" class="form-label">Họ và tên</label>
+                                <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Password" class="form-label">Mật khẩu</label>
+                                <div class="input-group">
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" id="password" />
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye" id="password-icon"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Grade" class="form-label">Khối</label>
+                                <select asp-for="Grade" class="form-select">
+                                    <option value="">Chọn khối</option>
+                                    <option value="10">Khối 10</option>
+                                    <option value="11">Khối 11</option>
+                                    <option value="12">Khối 12</option>
+                                </select>
+                                <span asp-validation-for="Grade" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+       <!-- Thông tin về lớp học -->
+       <div class="alert alert-info mb-3">
+           <h6><i class="fas fa-info-circle me-2"></i>Thông tin:</h6>
+           <p class="mb-0">Sau khi đăng ký thành công, bạn sẽ thấy các lớp học phù hợp với khối của mình. Nếu khối bạn chưa có lớp học nào, vui lòng liên hệ giáo viên.</p>
+       </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <p class="mb-0">Đã có tài khoản?</p>
+                        <a asp-action="Login" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + '-icon');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                field.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+    </script>
+}
+

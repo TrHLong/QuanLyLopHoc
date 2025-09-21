@@ -1,0 +1,427 @@
+@model ClassManagement.Web.Controllers.HomeViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- Hero Section với animation -->
+<div class="hero-banner position-relative overflow-hidden">
+    <div class="hero-overlay"></div>
+    <div class="hero-pattern"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-60">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <div class="welcome-badge mb-3">
+                        <span class="badge bg-gradient-primary px-3 py-2">
+                            <i class="fas fa-star me-2"></i>Chào mừng đến với lớp học Toán
+                        </span>
+                    </div>
+                    <h1 class="display-3 fw-bold text-white mb-4 animate-fade-in">
+                        <span class="text-gradient">Chào mừng các em!</span>
+                    </h1>
+                    <h2 class="h3 text-white mb-3 animate-slide-up">
+                        Tham gia học môn <span class="text-warning fw-bold">Toán</span> cùng 
+                        <span class="text-info fw-bold">Thầy Long</span>
+                    </h2>
+                    <p class="lead text-white mb-4 animate-slide-up" style="animation-delay: 0.2s;">
+                        Hệ thống quản lý lớp học hiện đại, giúp các em theo dõi tiến độ học tập, 
+                        nộp bài tập và tương tác với thầy một cách dễ dàng
+                    </p>
+                    <div class="d-flex gap-3 animate-slide-up" style="animation-delay: 0.4s;">
+                        @if (Context.Session.GetString("UserId") == null)
+                        {
+                            <a asp-controller="Auth" asp-action="Register" class="btn btn-warning btn-lg px-4 py-3 shadow-lg">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký học ngay
+                            </a>
+                            <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-light btn-lg px-4 py-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Course" asp-action="Index" class="btn btn-warning btn-lg px-4 py-3 shadow-lg">
+                                <i class="fas fa-book me-2"></i>Vào lớp học
+                            </a>
+                            <a asp-controller="Assignment" asp-action="Index" class="btn btn-outline-light btn-lg px-4 py-3">
+                                <i class="fas fa-tasks me-2"></i>Bài tập
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="hero-image text-center animate-float">
+                    <div class="math-symbols">
+                        <div class="symbol symbol-1">∫</div>
+                        <div class="symbol symbol-2">π</div>
+                        <div class="symbol symbol-3">√</div>
+                        <div class="symbol symbol-4">α</div>
+                        <div class="symbol symbol-5">β</div>
+                    </div>
+                    <div class="teacher-avatar">
+                        <div class="avatar-circle">
+                            <i class="fas fa-chalkboard-teacher fa-4x text-white"></i>
+                        </div>
+                        <div class="teacher-info mt-3">
+                            <h5 class="text-white mb-1">Thầy Long</h5>
+                            <p class="text-light mb-0">Giáo viên Toán cấp 3</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Thống kê nhanh -->
+<div class="stats-section py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users text-primary"></i>
+                    </div>
+                    <h3 class="stat-number">150+</h3>
+                    <p class="stat-label">Học sinh đã tham gia</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book text-success"></i>
+                    </div>
+                    <h3 class="stat-number">12</h3>
+                    <p class="stat-label">Khóa học đang mở</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tasks text-info"></i>
+                    </div>
+                    <h3 class="stat-number">500+</h3>
+                    <p class="stat-label">Bài tập đã giao</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy text-warning"></i>
+                    </div>
+                    <h3 class="stat-number">95%</h3>
+                    <p class="stat-label">Tỷ lệ đạt điểm cao</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Giới thiệu khóa học -->
+<div class="courses-intro py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-graduation-cap me-3"></i>Khóa học Toán cấp 3
+                </h2>
+                <p class="lead text-muted">
+                    Các khóa học được thiết kế phù hợp với từng khối lớp, giúp các em nắm vững kiến thức và đạt kết quả cao
+                </p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="course-card h-100">
+                    <div class="course-header bg-gradient-primary text-white">
+                        <div class="course-icon">
+                            <i class="fas fa-calculator fa-2x"></i>
+                        </div>
+                        <h4 class="mb-0">Khối 10</h4>
+                        <p class="mb-0">Toán học cơ bản</p>
+                    </div>
+                    <div class="course-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Đại số và Giải tích</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Hình học không gian</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Lượng giác cơ bản</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Thứ 2, 4 hàng tuần</li>
+                        </ul>
+                        <div class="course-schedule">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>Ca 1: 14:00 - 16:00<br>
+                                <i class="fas fa-clock me-1"></i>Ca 2: 17:00 - 19:00
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="course-card h-100">
+                    <div class="course-header bg-gradient-success text-white">
+                        <div class="course-icon">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                        <h4 class="mb-0">Khối 11</h4>
+                        <p class="mb-0">Toán học nâng cao</p>
+                    </div>
+                    <div class="course-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Giải tích phức tạp</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Hình học phẳng</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Xác suất thống kê</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Thứ 3, 5 hàng tuần</li>
+                        </ul>
+                        <div class="course-schedule">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>Ca 1: 14:00 - 16:00<br>
+                                <i class="fas fa-clock me-1"></i>Ca 2: 17:00 - 19:00
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="course-card h-100">
+                    <div class="course-header bg-gradient-warning text-white">
+                        <div class="course-icon">
+                            <i class="fas fa-trophy fa-2x"></i>
+                        </div>
+                        <h4 class="mb-0">Khối 12</h4>
+                        <p class="mb-0">Luyện thi đại học</p>
+                    </div>
+                    <div class="course-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Ôn tập toàn diện</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Luyện đề thi thử</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Kỹ thuật giải nhanh</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Thứ 6, 7 hàng tuần</li>
+                        </ul>
+                        <div class="course-schedule">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>Ca 1: 14:00 - 16:00<br>
+                                <i class="fas fa-clock me-1"></i>Ca 2: 17:00 - 19:00
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Context.Session.GetString("UserId") != null)
+{
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-book me-2"></i>Khóa học của bạn
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Courses.Any())
+                        {
+                            <div class="row">
+                                @foreach (var course in Model.Courses.Take(3))
+                                {
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 border-0 shadow-sm">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Khối @course.Grade - Ca @course.TimeSlot</h6>
+                                                <p class="card-text">
+                                                    <small class="text-muted">
+                                                        Từ @course.StartDate.ToString("dd/MM/yyyy")<br>
+                                                        Đến @course.EndDate.ToString("dd/MM/yyyy")
+                                                    </small>
+                                                </p>
+                                                <span class="badge bg-@(course.IsActive ? "success" : "secondary")">
+                                                    @(course.IsActive ? "Đang hoạt động" : "Đã kết thúc")
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Bạn chưa đăng ký khóa học nào.</p>
+                                @if (Context.Session.GetString("UserRole") == "Student")
+                                {
+                                    <a asp-controller="Course" asp-action="Index" class="btn btn-primary">
+                                        <i class="fas fa-search me-1"></i>Tìm khóa học
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell me-2"></i>Thông báo mới
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Notifications.Any())
+                        {
+                            @foreach (var notification in Model.Notifications.Take(5))
+                            {
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-circle text-primary" style="font-size: 8px;"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-2">
+                                        <h6 class="mb-1">@notification.Title</h6>
+                                        <p class="mb-1 small text-muted">@notification.Message</p>
+                                        <small class="text-muted">@notification.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-3">
+                                <i class="fas fa-bell-slash fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">Không có thông báo mới.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @if (Context.Session.GetString("UserRole") == "Teacher")
+        {
+            <div class="row mt-4">
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-gradient-primary text-white border-0 shadow-lg">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x mb-3"></i>
+                            <h5>Quản lý học viên</h5>
+                            <p class="mb-3">Xem danh sách và quản lý học viên</p>
+                            <a asp-controller="Student" asp-action="Index" class="btn btn-light btn-lg">
+                                <i class="fas fa-arrow-right me-1"></i>Xem ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-gradient-success text-white border-0 shadow-lg">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-check fa-3x mb-3"></i>
+                            <h5>Duyệt đăng ký</h5>
+                            <p class="mb-3">Duyệt các đăng ký khóa học mới</p>
+                            <a asp-controller="Course" asp-action="Registrations" class="btn btn-light btn-lg">
+                                <i class="fas fa-arrow-right me-1"></i>Xem ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-gradient-info text-white border-0 shadow-lg">
+                        <div class="card-body text-center">
+                            <i class="fas fa-plus fa-3x mb-3"></i>
+                            <h5>Tạo khóa học</h5>
+                            <p class="mb-3">Tạo khóa học mới cho học viên</p>
+                            <a asp-controller="Course" asp-action="Create" class="btn btn-light btn-lg">
+                                <i class="fas fa-arrow-right me-1"></i>Tạo ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row mt-4">
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-gradient-primary text-white border-0 shadow-lg">
+                        <div class="card-body text-center">
+                            <i class="fas fa-book fa-3x mb-3"></i>
+                            <h5>Khóa học</h5>
+                            <p class="mb-3">Xem và đăng ký khóa học</p>
+                            <a asp-controller="Course" asp-action="Index" class="btn btn-light btn-lg">
+                                <i class="fas fa-arrow-right me-1"></i>Xem ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-gradient-success text-white border-0 shadow-lg">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tasks fa-3x mb-3"></i>
+                            <h5>Bài tập</h5>
+                            <p class="mb-3">Xem và nộp bài tập</p>
+                            <a asp-controller="Assignment" asp-action="Index" class="btn btn-light btn-lg">
+                                <i class="fas fa-arrow-right me-1"></i>Xem ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="card bg-gradient-info text-white border-0 shadow-lg">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-check fa-3x mb-3"></i>
+                            <h5>Điểm danh</h5>
+                            <p class="mb-3">Xem lịch sử điểm danh</p>
+                            <a asp-controller="Attendance" asp-action="Index" class="btn btn-light btn-lg">
+                                <i class="fas fa-arrow-right me-1"></i>Xem ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mx-auto mb-3">
+                            <i class="fas fa-users text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Quản lý học viên</h5>
+                        <p class="card-text">Dễ dàng quản lý thông tin học viên, theo dõi tiến độ học tập và điểm danh.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mx-auto mb-3">
+                            <i class="fas fa-tasks text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Giao bài tập</h5>
+                        <p class="card-text">Tạo và giao bài tập, chấm điểm tự động, theo dõi tiến độ nộp bài.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mx-auto mb-3">
+                            <i class="fas fa-chart-line text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Báo cáo chi tiết</h5>
+                        <p class="card-text">Xuất báo cáo tổng hợp, thống kê điểm danh và kết quả học tập.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

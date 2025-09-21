@@ -1,0 +1,92 @@
+@model ClassManagement.Application.DTOs.LoginDto
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>
+                                    <i class="fas fa-exclamation-triangle me-2"></i>@error.ErrorMessage
+                                </div>
+                            }
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    
+                    <form asp-action="Login" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" placeholder="Nhập email của bạn" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Mật khẩu</label>
+                            <div class="input-group">
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" id="password" />
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye" id="password-icon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe" />
+                            <label class="form-check-label" for="rememberMe">
+                                <i class="fas fa-clock me-1"></i>Ghi nhớ đăng nhập (30 ngày)
+                            </label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a asp-action="ForgotPassword" class="text-decoration-none">
+                            <i class="fas fa-key me-1"></i>Quên mật khẩu?
+                        </a>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <p class="mb-0">Chưa có tài khoản?</p>
+                        <a asp-action="Register" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-user-plus me-1"></i>Đăng ký ngay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + '-icon');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                field.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+    </script>
+}
+

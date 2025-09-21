@@ -1,0 +1,147 @@
+@model ClassManagement.Application.DTOs.CreateCourseDto
+@{
+    ViewData["Title"] = "Tạo lớp học mới";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Tạo lớp học mới
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Thông tin lịch học -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="fas fa-info-circle me-2"></i>Lịch học theo khối:</h6>
+                        <ul class="mb-0">
+                            <li><strong>Khối 10:</strong> Thứ 2, Thứ 4 - Ca 1 (14:00-16:00) hoặc Ca 2 (17:00-19:00)</li>
+                            <li><strong>Khối 11:</strong> Thứ 3, Thứ 5 - Ca 1 (14:00-16:00) hoặc Ca 2 (17:00-19:00)</li>
+                            <li><strong>Khối 12:</strong> Thứ 6, Thứ 7 - Ca 1 (14:00-16:00) hoặc Ca 2 (17:00-19:00)</li>
+                        </ul>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                <strong>Lưu ý:</strong> Ngày bắt đầu phải sau ngày hiện tại và phải trùng với lịch học của khối
+                            </small>
+                        </div>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Grade" class="form-label">Khối</label>
+                                <select asp-for="Grade" class="form-select" id="gradeSelect">
+                                    <option value="">Chọn khối</option>
+                                    <option value="10">Khối 10</option>
+                                    <option value="11">Khối 11</option>
+                                    <option value="12">Khối 12</option>
+                                </select>
+                                <span asp-validation-for="Grade" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TimeSlot" class="form-label">Ca học</label>
+                                <select asp-for="TimeSlot" class="form-select">
+                                    <option value="">Chọn ca học</option>
+                                    <option value="1">Ca 1 (14:00-16:00)</option>
+                                    <option value="2">Ca 2 (17:00-19:00)</option>
+                                </select>
+                                <span asp-validation-for="TimeSlot" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="StartDate" class="form-label">Ngày bắt đầu</label>
+                            <input asp-for="StartDate" type="date" class="form-control" id="startDate" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                            <div class="form-text">
+                                <span id="scheduleInfo" class="text-muted"></span>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Tạo lớp học
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gradeSelect = document.getElementById('gradeSelect');
+            const startDateInput = document.getElementById('startDate');
+            const scheduleInfo = document.getElementById('scheduleInfo');
+            
+            const scheduleMap = {
+                '10': { days: ['Thứ 2', 'Thứ 4'], dayNumbers: [1, 3] },
+                '11': { days: ['Thứ 3', 'Thứ 5'], dayNumbers: [2, 4] },
+                '12': { days: ['Thứ 6', 'Thứ 7'], dayNumbers: [5, 6] }
+            };
+            
+            function updateScheduleInfo() {
+                const selectedGrade = gradeSelect.value;
+                if (selectedGrade && scheduleMap[selectedGrade]) {
+                    const schedule = scheduleMap[selectedGrade];
+                    scheduleInfo.innerHTML = `<i class="fas fa-calendar-alt me-1"></i>Khối ${selectedGrade} học vào: ${schedule.days.join(', ')}`;
+                    scheduleInfo.className = 'text-info';
+                } else {
+                    scheduleInfo.innerHTML = '';
+                }
+            }
+            
+            function validateDate() {
+                const selectedGrade = gradeSelect.value;
+                const selectedDate = startDateInput.value;
+                
+                if (selectedGrade && selectedDate && scheduleMap[selectedGrade]) {
+                    const date = new Date(selectedDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    date.setHours(0, 0, 0, 0);
+                    
+                    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                    const schedule = scheduleMap[selectedGrade];
+                    
+                    // Convert to our day numbering (1 = Monday, 2 = Tuesday, etc.)
+                    const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    
+                    // Kiểm tra ngày có sau ngày hiện tại không
+                    if (date <= today) {
+                        scheduleInfo.innerHTML = `<i class="fas fa-times-circle me-1"></i>Ngày bắt đầu lớp học phải sau ngày hiện tại (${today.toLocaleDateString('vi-VN')})`;
+                        scheduleInfo.className = 'text-danger';
+                        return;
+                    }
+                    
+                    // Kiểm tra ngày có phù hợp với lịch học không
+                    if (schedule.dayNumbers.includes(adjustedDay)) {
+                        scheduleInfo.innerHTML = `<i class="fas fa-check-circle me-1"></i>✅ Ngày phù hợp với lịch học khối ${selectedGrade}`;
+                        scheduleInfo.className = 'text-success';
+                    } else {
+                        scheduleInfo.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i>❌ Ngày không phù hợp! Khối ${selectedGrade} học vào: ${schedule.days.join(', ')}`;
+                        scheduleInfo.className = 'text-danger';
+                    }
+                }
+            }
+            
+            gradeSelect.addEventListener('change', updateScheduleInfo);
+            startDateInput.addEventListener('change', validateDate);
+            
+            // Initial update
+            updateScheduleInfo();
+        });
+    </script>
+}
+

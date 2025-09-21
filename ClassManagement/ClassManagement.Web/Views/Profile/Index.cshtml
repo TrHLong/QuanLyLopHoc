@@ -1,0 +1,72 @@
+@model ClassManagement.Application.DTOs.UpdateProfileDto
+
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Hồ sơ cá nhân
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="UpdateProfile" method="post">
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">Họ và tên</label>
+                            <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" required />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="Nhập email" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Grade" class="form-label">Khối</label>
+                            <select asp-for="Grade" class="form-select" required>
+                                <option value="">Chọn khối</option>
+                                <option value="10">Khối 10</option>
+                                <option value="11">Khối 11</option>
+                                <option value="12">Khối 12</option>
+                            </select>
+                            <span asp-validation-for="Grade" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Cập nhật hồ sơ
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a asp-action="ChangePassword" class="btn btn-warning me-2">
+                            <i class="fas fa-key me-1"></i>Đổi mật khẩu
+                        </a>
+                        <a asp-controller="Course" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

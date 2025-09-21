@@ -1,0 +1,17 @@
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Application.deps.json
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Application.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Application.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.AssemblyInfoInputs.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.AssemblyInfo.cs
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.csproj.CoreCompileInputs.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\refint\ClassManagement.Application.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ref\ClassManagement.Application.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassManagement.Application.csproj.AssemblyReference.cache
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Domain.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Domain.pdb
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\obj\Debug\net8.0\ClassMan.4379FA7D.Up2Date
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Infrastructure.dll
+D:\LEARN\2025-2026(1)\CongNghePhanMem\BaiTapLon\ClassManagement\ClassManagement.Application\bin\Debug\net8.0\ClassManagement.Infrastructure.pdb

@@ -1,0 +1,261 @@
+@model ClassManagement.Domain.Entities.Course
+@{
+    ViewData["Title"] = $"Chi tiết khóa học - Khối {Model.Grade} - Ca {Model.TimeSlot}";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book me-2"></i>Chi tiết khóa học - Khối @Model.Grade - Ca @Model.TimeSlot
+                    </h5>
+                    <div class="d-flex gap-2">
+                        @if (Context.Session.GetString("UserRole") == "Teacher")
+                        {
+                            <a asp-controller="Teacher" asp-action="CreateAssignment" asp-route-courseId="@Model.Id" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Tạo bài tập
+                            </a>
+                            <a asp-controller="Attendance" asp-action="Mark" asp-route-courseId="@Model.Id" class="btn btn-info btn-sm">
+                                <i class="fas fa-check me-1"></i>Điểm danh
+                            </a>
+                            @if (Model.IsEnded)
+                            {
+                                <a asp-controller="Teacher" asp-action="SetFinalGrade" asp-route-courseId="@Model.Id" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-graduation-cap me-1"></i>Nhập điểm cuối
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Thông tin khóa học</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Khối:</strong> @Model.Grade</li>
+                                <li><strong>Ca học:</strong> @Model.TimeSlot</li>
+                                <li><strong>Ngày bắt đầu:</strong> @Model.StartDate.ToString("dd/MM/yyyy")</li>
+                                <li><strong>Ngày kết thúc:</strong> @Model.EndDate.ToString("dd/MM/yyyy")</li>
+                                <li><strong>Trạng thái:</strong> 
+                                    @if (Model.IsEnded)
+                                    {
+                                        <span class="badge bg-secondary">Đã kết thúc</span>
+                                    }
+                                    else if (Model.IsEndingSoon)
+                                    {
+                                        <span class="badge bg-warning">Sắp kết thúc</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Đang diễn ra</span>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Thống kê</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Số học viên:</strong> @Model.CourseRegistrations.Count(cr => cr.Status == ClassManagement.Domain.Enums.RegistrationStatus.Approved)</li>
+                                <li><strong>Số bài tập:</strong> @Model.Assignments.Count</li>
+                                <li><strong>Dữ liệu đã xuất:</strong> 
+                                    @if (Model.IsDataExported)
+                                    {
+                                        <span class="badge bg-success">Đã xuất</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Chưa xuất</span>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Danh sách học viên</h6>
+                            @if (Model.CourseRegistrations.Any(cr => cr.Status == ClassManagement.Domain.Enums.RegistrationStatus.Approved))
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Họ tên</th>
+                                                <th>Email</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var registration in Model.CourseRegistrations.Where(cr => cr.Status == ClassManagement.Domain.Enums.RegistrationStatus.Approved))
+                                            {
+                                                <tr>
+                                                    <td>@registration.Student.FullName</td>
+                                                    <td>@registration.Student.Email</td>
+                                                    <td>
+                                                        @if (Context.Session.GetString("UserRole") == "Teacher")
+                                                        {
+                                                            <button type="button" class="btn btn-danger btn-sm" 
+                                                                    onclick="confirmRemove(@Model.Id, @registration.StudentId, '@registration.Student.FullName')">
+                                                                <i class="fas fa-user-minus me-1"></i>Xóa khỏi khóa
+                                                            </button>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Chưa có học viên nào</p>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Bài tập</h6>
+                            @if (Model.Assignments.Any())
+                            {
+                                <div class="list-group">
+                                    @foreach (var assignment in Model.Assignments.Take(5))
+                                    {
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="mb-1">@assignment.Title</h6>
+                                                    <p class="mb-1">@assignment.Description</p>
+                                                    <small class="text-muted">Hạn nộp: @assignment.DueDate.ToString("dd/MM/yyyy HH:mm")</small>
+                                                    @if (Context.Session.GetString("UserRole") == "Teacher")
+                                                    {
+                                                        <div class="mt-2">
+                                                            <a asp-controller="Teacher" asp-action="GradeAssignment" asp-route-assignmentId="@assignment.Id" 
+                                                               class="btn btn-sm btn-outline-success me-2">
+                                                                <i class="fas fa-check-circle me-1"></i>Chấm điểm
+                                                            </a>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                    onclick="confirmDeleteAssignment(@assignment.Id, '@assignment.Title')">
+                                                                <i class="fas fa-trash me-1"></i>Xóa
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                @if (assignment.IsOverdue)
+                                                {
+                                                    <span class="badge bg-danger">Quá hạn</span>
+                                                }
+                                                else if (assignment.IsDueSoon)
+                                                {
+                                                    <span class="badge bg-warning">Sắp đến hạn</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">Còn thời gian</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                @if (Model.Assignments.Count > 5)
+                                {
+                                    <p class="text-muted mt-2">Và @(Model.Assignments.Count - 5) bài tập khác...</p>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-muted">Chưa có bài tập nào</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Student Confirmation Modal -->
+<div class="modal fade" id="removeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa học viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc muốn xóa <strong id="studentName"></strong> khỏi khóa học?</p>
+                <p class="text-danger">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="removeForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-user-minus me-1"></i>Xóa khỏi khóa
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Assignment Confirmation Modal -->
+<div class="modal fade" id="deleteAssignmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa bài tập</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc muốn xóa bài tập <strong id="assignmentTitle"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Lưu ý:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Nếu chưa có học sinh nào nộp bài → Bài tập sẽ bị xóa hoàn toàn</li>
+                        <li>Nếu đã có học sinh nộp bài → Bài tập sẽ bị hủy (không hiển thị) và học sinh sẽ nhận thông báo</li>
+                    </ul>
+                </div>
+                <p class="text-danger">Hành động này không thể hoàn tác!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteAssignmentForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Xóa bài tập
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmRemove(courseId, studentId, studentName) {
+            document.getElementById('studentName').textContent = studentName;
+            document.getElementById('removeForm').action = '@Url.Action("RemoveStudentFromCourse", "Teacher")';
+            document.getElementById('removeForm').innerHTML = `
+                <input type="hidden" name="courseId" value="${courseId}" />
+                <input type="hidden" name="studentId" value="${studentId}" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-user-minus me-1"></i>Xóa khỏi khóa
+                </button>
+            `;
+            new bootstrap.Modal(document.getElementById('removeModal')).show();
+        }
+
+        function confirmDeleteAssignment(assignmentId, assignmentTitle) {
+            document.getElementById('assignmentTitle').textContent = assignmentTitle;
+            document.getElementById('deleteAssignmentForm').action = '@Url.Action("DeleteAssignment", "Teacher")';
+            document.getElementById('deleteAssignmentForm').innerHTML = `
+                <input type="hidden" name="assignmentId" value="${assignmentId}" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i>Xóa bài tập
+                </button>
+            `;
+            new bootstrap.Modal(document.getElementById('deleteAssignmentModal')).show();
+        }
+    </script>
+}
+
+

@@ -1,0 +1,176 @@
+@model List<ClassManagement.Application.DTOs.CourseDto>
+@{
+    ViewData["Title"] = "Danh sách lớp học";
+    
+    // Function để hiển thị lịch học
+    string GetScheduleDisplay(ClassManagement.Domain.Enums.Grade grade, ClassManagement.Domain.Enums.TimeSlot timeSlot)
+    {
+        var scheduleDays = grade switch
+        {
+            ClassManagement.Domain.Enums.Grade.Grade10 => new[] { "Thứ 2", "Thứ 4" },
+            ClassManagement.Domain.Enums.Grade.Grade11 => new[] { "Thứ 3", "Thứ 5" },
+            ClassManagement.Domain.Enums.Grade.Grade12 => new[] { "Thứ 6", "Thứ 7" },
+            _ => new[] { "N/A" }
+        };
+        
+        var timeDisplay = timeSlot switch
+        {
+            ClassManagement.Domain.Enums.TimeSlot.Slot1 => "Ca 1 (14:00-16:00)",
+            ClassManagement.Domain.Enums.TimeSlot.Slot2 => "Ca 2 (17:00-19:00)",
+            _ => "N/A"
+        };
+        
+        return $"{string.Join(", ", scheduleDays)} - {timeDisplay}";
+    }
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>Danh sách lớp học
+                    </h5>
+                    @if (Context.Session.GetString("UserRole") == "Teacher")
+                    {
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Tạo lớp học mới
+                        </a>
+                    }
+                </div>
+                @if (Context.Session.GetString("UserRole") == "Student" && (ViewBag.HasApprovedRegistration ?? false))
+                {
+                    <div class="alert alert-success mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Bạn đã được phê duyệt vào lớp học!</strong> 
+                        Dưới đây là thông tin lớp học của bạn. Nếu muốn đổi lớp, vui lòng liên hệ giáo viên.
+                    </div>
+                }
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="row">
+                            @foreach (var course in Model)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">Khối @course.Grade - @GetScheduleDisplay(course.Grade, course.TimeSlot)</h6>
+                                            @if (course.IsEnded)
+                                            {
+                                                <span class="badge bg-secondary">Đã kết thúc</span>
+                                            }
+                                            else if (course.IsEndingSoon)
+                                            {
+                                                <span class="badge bg-warning">Sắp kết thúc</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Đang diễn ra</span>
+                                            }
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    Từ @course.StartDate.ToString("dd/MM/yyyy")
+                                                </small>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    Đến @course.EndDate.ToString("dd/MM/yyyy")
+                                                </small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-users me-1"></i>
+                                                    @course.StudentCount học viên
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye me-1"></i>Chi tiết
+                                                </a>
+                                                @if (Context.Session.GetString("UserRole") == "Student" && !course.IsEnded && !(ViewBag.HasApprovedRegistration ?? false))
+                                                {
+                                                    <a asp-action="Register" asp-route-courseId="@course.Id" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-user-plus me-1"></i>Đăng ký
+                                                    </a>
+                                                }
+                                                @if (Context.Session.GetString("UserRole") == "Student" && (ViewBag.HasApprovedRegistration ?? false))
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>Lớp của bạn
+                                                    </span>
+                                                }
+                                                @if (Context.Session.GetString("UserRole") == "Teacher")
+                                                {
+                                                    @if (course.IsEnded && !course.IsDataExported)
+                                                    {
+                                                        <a asp-action="Export" asp-route-courseId="@course.Id" class="btn btn-success btn-sm">
+                                                            <i class="fas fa-download me-1"></i>Xuất dữ liệu
+                                                        </a>
+                                                    }
+                                                    @if (course.StudentCount == 0)
+                                                    {
+                                                        <button type="button" class="btn btn-outline-danger btn-sm" 
+                                                                onclick="confirmDelete(@course.Id, '@course.Grade', '@course.TimeSlot')">
+                                                            <i class="fas fa-trash me-1"></i>Xóa
+                                                        </button>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            @if (Context.Session.GetString("UserRole") == "Student")
+                            {
+                                <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                   <h5 class="text-muted">Khối của bạn chưa có lớp học nào</h5>
+                   <p class="text-muted">Vui lòng liên hệ giáo viên để được tạo lớp học phù hợp</p>
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">
+                                    <i class="fas fa-home me-1"></i>Về trang chủ
+                                </a>
+                            }
+                            else
+                            {
+                                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                   <p class="text-muted">Chưa có lớp học nào</p>
+                   <a asp-action="Create" class="btn btn-primary">
+                       <i class="fas fa-plus me-1"></i>Tạo lớp học đầu tiên
+                   </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form ẩn để xóa khóa học -->
+<form id="deleteForm" asp-action="Delete" method="post" style="display: none;">
+    <input type="hidden" id="courseIdToDelete" name="courseId" />
+</form>
+
+@section Scripts {
+    <script>
+        function confirmDelete(courseId, grade, timeSlot) {
+            if (confirm(`Bạn có chắc chắn muốn xóa khóa học Khối ${grade} - Ca ${timeSlot}?\n\nLưu ý: Chỉ có thể xóa khóa học chưa có học viên đăng ký.`)) {
+                document.getElementById('courseIdToDelete').value = courseId;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+    </script>
+}
+

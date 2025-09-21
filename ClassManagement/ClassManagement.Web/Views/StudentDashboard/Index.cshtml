@@ -1,0 +1,213 @@
+@model ClassManagement.Web.Controllers.StudentDashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển học viên";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-tachometer-alt me-2"></i>Bảng điều khiển học viên
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin lớp học -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-graduation-cap me-2"></i>Thông tin lớp học
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Lớp:</strong> @Model.ApprovedRegistration.Grade</p>
+                            <p><strong>Ca học:</strong> @Model.ApprovedRegistration.TimeSlot</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Trạng thái:</strong> 
+                                <span class="badge bg-success">Đã được phê duyệt</span>
+                            </p>
+                            <p><strong>Ngày đăng ký:</strong> @Model.ApprovedRegistration.RequestedAt.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.Assignments.Count</h4>
+                            <p class="mb-0">Bài tập</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-tasks fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.Submissions.Count</h4>
+                            <p class="mb-0">Đã nộp</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.Attendances.Count</h4>
+                            <p class="mb-0">Điểm danh</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@(Model.FinalGrade?.Grade.ToString("F1") ?? "Chưa có")</h4>
+                            <p class="mb-0">Điểm cuối kỳ</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-star fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Các chức năng chính -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Điểm danh</h5>
+                    <p class="card-text">Xem lịch sử điểm danh của bạn</p>
+                    <a asp-action="Attendance" class="btn btn-primary">Xem điểm danh</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Bài tập</h5>
+                    <p class="card-text">Xem và nộp bài tập</p>
+                    <a asp-action="Assignments" class="btn btn-success">Xem bài tập</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Điểm số</h5>
+                    <p class="card-text">Xem điểm bài tập và điểm cuối kỳ</p>
+                    <a asp-action="Grades" class="btn btn-warning">Xem điểm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bài tập gần đây -->
+    @if (Model.Assignments.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-clock me-2"></i>Bài tập gần đây
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tiêu đề</th>
+                                        <th>Hạn nộp</th>
+                                        <th>Trạng thái</th>
+                                        <th>Điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var assignment in Model.Assignments.Take(5))
+                                    {
+                                        var submission = Model.Submissions.FirstOrDefault(s => s.AssignmentId == assignment.Id);
+                                        <tr>
+                                            <td>@assignment.Title</td>
+                                            <td>
+                                                @assignment.DueDate.ToString("dd/MM/yyyy HH:mm")
+                                                @if (assignment.IsOverdue)
+                                                {
+                                                    <span class="badge bg-danger ms-2">Quá hạn</span>
+                                                }
+                                                else if (assignment.IsDueSoon)
+                                                {
+                                                    <span class="badge bg-warning ms-2">Sắp đến hạn</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (submission != null)
+                                                {
+                                                    <span class="badge bg-success">Đã nộp</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Chưa nộp</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (submission?.IsGraded == true)
+                                                {
+                                                    <span class="badge bg-info">@submission.Grade</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Chưa chấm</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+

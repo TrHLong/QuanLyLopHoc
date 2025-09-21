@@ -1,0 +1,9 @@
+Đây là file test bài tập để kiểm tra chức năng upload và hiển thị file.
+
+Nội dung bài tập:
+1. Làm bài tập số 1
+2. Làm bài tập số 2
+3. Nộp bài trước hạn
+
+Chúc các em làm bài tốt!
+

@@ -1,0 +1,244 @@
+@model ClassManagement.Web.Controllers.StudentGradesViewModel
+@{
+    ViewData["Title"] = "Điểm số";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">
+                    <i class="fas fa-chart-line me-2"></i>Điểm số
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tổng quan điểm số -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@Model.AssignmentGrades.Count</h4>
+                            <p class="mb-0">Bài tập đã chấm</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-tasks fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">@(Model.FinalGrade?.ToString("F1") ?? "Chưa có")</h4>
+                            <p class="mb-0">Điểm cuối kỳ</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-star fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Điểm bài tập -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Điểm bài tập
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.AssignmentGrades.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Bài tập</th>
+                                        <th>Thời gian nộp</th>
+                                        <th>Điểm</th>
+                                        <th>Nhận xét</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var grade in Model.AssignmentGrades.OrderByDescending(g => g.SubmittedAt))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@grade.AssignmentTitle</strong>
+                                                @if (grade.IsLate)
+                                                {
+                                                    <span class="badge bg-warning ms-2">Nộp muộn</span>
+                                                }
+                                            </td>
+                                            <td>@grade.SubmittedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <span class="badge bg-info fs-6">@grade.Grade</span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(grade.Feedback))
+                                                {
+                                                    <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@grade.Feedback">
+                                                        @grade.Feedback
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Không có nhận xét</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Thống kê điểm -->
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0">@Model.AssignmentGrades.Average(g => g.Grade ?? 0).ToString("F1")</h4>
+                                        <p class="mb-0">Điểm trung bình</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0">@Model.AssignmentGrades.Max(g => g.Grade ?? 0)</h4>
+                                        <p class="mb-0">Điểm cao nhất</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0">@Model.AssignmentGrades.Min(g => g.Grade ?? 0)</h4>
+                                        <p class="mb-0">Điểm thấp nhất</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có điểm bài tập nào</h5>
+                            <p class="text-muted">Điểm bài tập sẽ hiển thị sau khi giáo viên chấm bài.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Điểm cuối kỳ -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>Điểm cuối kỳ
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.FinalGrade.HasValue)
+                    {
+                        <div class="text-center py-4">
+                            <div class="display-1 text-success mb-3">@Model.FinalGrade.Value.ToString("F1")</div>
+                            <h5 class="text-muted">Điểm cuối kỳ</h5>
+                            <p class="text-muted">Điểm này được tính sau khi hoàn thành khóa học và kiểm tra cuối kỳ.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có điểm cuối kỳ</h5>
+                            <p class="text-muted">Điểm cuối kỳ sẽ được hiển thị sau khi giáo viên nhập điểm kiểm tra cuối kỳ.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biểu đồ điểm số (nếu có đủ dữ liệu) -->
+    @if (Model.AssignmentGrades.Count >= 3)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Biểu đồ điểm số
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="gradesChart" width="400" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại bảng điều khiển
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (Model.AssignmentGrades.Count >= 3)
+{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('gradesChart').getContext('2d');
+        const gradesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [
+                    @foreach (var grade in Model.AssignmentGrades.OrderBy(g => g.SubmittedAt))
+                    {
+                        <text>'@grade.AssignmentTitle',</text>
+                    }
+                ],
+                datasets: [{
+                    label: 'Điểm bài tập',
+                    data: [
+                        @foreach (var grade in Model.AssignmentGrades.OrderBy(g => g.SubmittedAt))
+                        {
+                            <text>@grade.Grade,</text>
+                        }
+                    ],
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,96 @@
+@model List<ClassManagement.Application.DTOs.AttendanceDto>
+@{
+    ViewData["Title"] = "Lịch sử điểm danh";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>Lịch sử điểm danh
+                    </h5>
+                    <span class="badge bg-primary">@Model.Count buổi học</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ngày</th>
+                                        <th>Ca học</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var attendance in Model)
+                                    {
+                                        <tr>
+                                            <td>@attendance.Date.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <span class="badge bg-info">Ca @attendance.TimeSlot</span>
+                                            </td>
+                                            <td>
+                                                @if (attendance.Status == ClassManagement.Domain.Enums.AttendanceStatus.Present)
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check me-1"></i>Có mặt
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-times me-1"></i>Vắng mặt
+                                                    </span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-success">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            @Model.Count(a => a.Status == ClassManagement.Domain.Enums.AttendanceStatus.Present)
+                                        </h5>
+                                        <p class="card-text">Buổi có mặt</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-danger">
+                                            <i class="fas fa-times-circle me-2"></i>
+                                            @Model.Count(a => a.Status == ClassManagement.Domain.Enums.AttendanceStatus.Absent)
+                                        </h5>
+                                        <p class="card-text">Buổi vắng mặt</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Chưa có lịch sử điểm danh</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

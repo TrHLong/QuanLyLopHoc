@@ -1,0 +1,327 @@
+@model List<ClassManagement.Application.DTOs.StudentDto>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản học viên";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-shield me-2"></i>Quản lý tài khoản học viên
+                    </h4>
+                    <p class="mb-0 mt-2">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Quản lý trạng thái tài khoản học viên: khóa/mở khóa tài khoản, xóa tài khoản
+                    </p>
+                    <small class="text-light">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        <strong>Lưu ý:</strong> "Không hoạt động" = không đăng nhập > 30 ngày | "Đã khóa" = tài khoản bị vô hiệu hóa
+                    </small>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Khối</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày đăng ký</th>
+                                        <th>Lần đăng nhập cuối</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var student in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user-circle fa-2x text-primary me-2"></i>
+                                                    <strong>@student.FullName</strong>
+                                                </div>
+                                            </td>
+                                            <td>@student.Email</td>
+                                            <td>
+                                                <span class="badge bg-info">Khối @student.Grade</span>
+                                            </td>
+                                            <td>
+                                                @if (student.IsInactive)
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-lock me-1"></i>Đã khóa
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-unlock me-1"></i>Hoạt động
+                                                    </span>
+                                                }
+                                                @if (student.IsDormant && !student.IsInactive)
+                                                {
+                                                    <br><small class="text-warning">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>Không hoạt động
+                                                    </small>
+                                                }
+                                            </td>
+                                            <td>@student.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                @if (student.LastLoginAt.HasValue)
+                                                {
+                                                    @student.LastLoginAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Chưa đăng nhập</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            onclick="viewAccountDetails(@student.Id, '@student.FullName')">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    @if (student.IsInactive)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-success" 
+                                                                onclick="toggleAccountStatus(@student.Id, '@student.FullName', true)"
+                                                                title="Mở khóa tài khoản">
+                                                            <i class="fas fa-unlock"></i>
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-warning" 
+                                                                onclick="toggleAccountStatus(@student.Id, '@student.FullName', false)"
+                                                                title="Khóa tài khoản">
+                                                            <i class="fas fa-lock"></i>
+                                                        </button>
+                                                    }
+                                                    <button type="button" class="btn btn-sm btn-danger" 
+                                                            onclick="deleteAccount(@student.Id, '@student.FullName')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Chưa có học viên nào</h5>
+                            <p class="text-muted">Học viên sẽ xuất hiện ở đây sau khi đăng ký tài khoản</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi tiết tài khoản -->
+<div class="modal fade" id="accountDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-shield me-2"></i>Chi tiết tài khoản
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="accountDetailsContent">
+                <!-- Nội dung sẽ được load bằng AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận thay đổi trạng thái -->
+<div class="modal fade" id="toggleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận thay đổi trạng thái
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="toggleMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-warning" id="confirmToggle">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận xóa tài khoản -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa tài khoản
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Cảnh báo:</strong> Hành động này sẽ xóa vĩnh viễn tài khoản học viên và không thể hoàn tác!
+                </div>
+                <p id="deleteMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Xóa tài khoản</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentStudentId = 0;
+        let currentStudentName = '';
+
+
+        function viewAccountDetails(studentId, studentName) {
+            currentStudentId = studentId;
+            currentStudentName = studentName;
+            
+            fetch(`/AccountManagement/AccountDetails/${studentId}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('accountDetailsContent').innerHTML = data;
+                    new bootstrap.Modal(document.getElementById('accountDetailsModal')).show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi tải thông tin tài khoản');
+                });
+        }
+
+        function toggleAccountStatus(studentId, studentName, isInactive) {
+            currentStudentId = studentId;
+            currentStudentName = studentName;
+            
+            const action = isInactive ? 'mở khóa' : 'khóa';
+            const message = `Bạn có chắc chắn muốn ${action} tài khoản của học viên <strong>${studentName}</strong>?`;
+            
+            document.getElementById('toggleMessage').innerHTML = message;
+            new bootstrap.Modal(document.getElementById('toggleModal')).show();
+        }
+
+        function deleteAccount(studentId, studentName) {
+            currentStudentId = studentId;
+            currentStudentName = studentName;
+            
+            const message = `Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của học viên <strong>${studentName}</strong>?<br><br>
+                            <strong>Lưu ý:</strong> Hành động này sẽ xóa tài khoản và tất cả dữ liệu liên quan. Học viên sẽ không thể đăng nhập vào hệ thống nữa.`;
+            
+            document.getElementById('deleteMessage').innerHTML = message;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        document.getElementById('confirmToggle').addEventListener('click', function() {
+            // Disable button để tránh double click
+            const confirmBtn = document.getElementById('confirmToggle');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            
+            fetch('/AccountManagement/ToggleAccountStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${currentStudentId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hiển thị thông báo thành công
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <i class="fas fa-check-circle me-2"></i>${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.card-body').firstChild);
+                    
+                    // Reload trang sau 1 giây
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert('Lỗi: ' + data.message);
+                    // Reset button
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = 'Xác nhận';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi thay đổi trạng thái tài khoản');
+                // Reset button
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = 'Xác nhận';
+            });
+            
+            bootstrap.Modal.getInstance(document.getElementById('toggleModal')).hide();
+        });
+
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            fetch('/AccountManagement/DeleteAccount', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${currentStudentId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi xóa tài khoản');
+            });
+            
+            bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+        });
+    </script>
+}
